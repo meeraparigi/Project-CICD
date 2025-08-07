@@ -16,36 +16,36 @@ pipeline {
       }
     }
 
-    stage('Initialize Terraform'){
-        dir('terraform'){
-            steps {
-               sh 'terraform init'
-            }
+    stage('Terraform Init') {
+      steps {
+        dir('terraform') {
+          sh 'terraform init'
         }
+      }
     }
 
-    stage('Validate Terraform Code'){
-        dir('terraform'){
-            steps {
-               sh 'terraform validate'
-            }
+    stage('Validate Terraform Code') {
+      steps {
+        dir('terraform') {
+          sh 'terraform validate'
         }
+      }
     }
-    
-    stage('Create Terraform Plan'){
-        dir('terraform'){
-            steps {
-               sh 'terraform plan'
-            }
+   
+    stage('Create Terraform Plan') {
+      steps {
+        dir('terraform') {
+          sh 'terraform plan'
         }
+      }
     }
 
-    stage('Create Inforastructure with Terraform'){
-        dir('terraform'){
-            steps {
-               sh 'terraform apply -auto-approve'
-            }
+    stage('Create Inforastructure with Terraform') {
+      steps {
+        dir('terraform') {
+          sh 'terraform apply -auto-approve'
         }
+      }
     }
   }
 }

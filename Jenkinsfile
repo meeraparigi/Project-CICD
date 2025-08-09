@@ -20,7 +20,7 @@ pipeline {
       steps{
           sh """
             chmod 600 $PEM_FILE
-            ansible-playbook -i ${INVENTORY_FILE} ${PLAYBOOK_FILE} --private-file=${PEM_FILE}
+            ansible-playbook -i ${INVENTORY_FILE} ${PLAYBOOK_FILE} --private-file=$PEM_FILE
           """
       }
     }
@@ -49,7 +49,7 @@ pipeline {
       }
     }
 
-    stage('Create Inforastructure with Terraform') {
+    stage('Create Infrastructure with Terraform') {
       steps {
         dir('terraform') {
           sh 'terraform apply -auto-approve'

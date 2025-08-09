@@ -20,6 +20,7 @@ pipeline {
       steps{
           sh """
             chmod 600 $PEM_FILE
+            ansible -i ${INVENTORY_FILE} -m all ping
             ansible-playbook -i ${INVENTORY_FILE} ${PLAYBOOK_FILE} --private-key $PEM_FILE
           """
       }

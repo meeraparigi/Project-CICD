@@ -35,3 +35,17 @@
       name: docker
       enabled: yes
       state: started
+
+  - name: Add user to docker group
+    user:
+      name: ubuntu
+      groups: docker
+      append: yes
+
+  - name: Check if the user is in docker group
+    command: id ubuntu
+    register: id_output
+
+  - name: Show user group info
+    debug: 
+      var: id_output.stdout

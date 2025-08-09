@@ -4,15 +4,24 @@ pipeline {
   environment {
       AWS_ACCESS_KEY_ID = credentials('aws-access-key-id')
       AWS_SECRET_ACCESS_KEY = credentials('aws-secret-access-key')
-      /* TF_VAR_aws_region = "us-east-1"
-      TF_VAR_bucket_name = "project-cicd-my-demo-s3-bucket" */
+      PEM_FILE = credentials('ansible-ssh-key')
+      INVENTORY_FILE = 'inventory.ini'
+      PLAYBOOK_FILE = 'install_docker.yaml'
   }
 
   stages {
     stage('Checkout'){
       steps {
-          /* git branch: 'main', url: 'https://github.com/meeraparigi/Project-CICD.git' */
           checkout scm
+      }
+    }
+
+    stage('Run Ansible Playbook'){
+      steps{
+          sh """
+            chmod 600 $PEM_FILE
+            ansible-playbook -i ${INVENTORY_FILE} ${PLAYBOOK_FILE} --private-file=$PEM_FILE
+          """
       }
     }
 

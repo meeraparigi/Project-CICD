@@ -1,0 +1,37 @@
+---
+- name: Install Docker on EC2 instance
+  hosts: all
+  become: yes
+  
+  tasks:
+  - name: Install dependencies
+    apt:
+      name: 
+        - apt-transport-https
+        - ca-certificates
+        - curl
+        - software-properties-common
+      state: present
+      update_cache: yes
+
+  - name: Add Docker and GPG key
+    apt_key:
+      url: https://download.docker.com/linux/ubuntu/gpg
+      state: present
+
+  - name: Add Docker repository
+    apt_repository:
+      repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable
+      state: present
+
+  - name: Install Docker
+    apt: 
+      name: docker-ce
+      state: latest
+      update_cache: yes
+
+  - name: Enable and start Docker
+    systemd:
+      name: docker
+      enabled: yes
+      state: started

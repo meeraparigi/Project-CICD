@@ -15,18 +15,22 @@ pipeline {
       }
     }
 
-    stage('Run Ansible Playbook'){
-      steps{
-            withCredentials([file(credentialsId: 'ansible-ssh-key', variable: 'PEM_FILE')]) {
-              sh '''
-                chmod 600 $PEM_FILE
-                cat <<EOF > inventory.ini
-                [all]
-                target1 ansible_host=3.93.183.119 ansible_user=ubuntu ansible_ssh_private_key_file=$PEM_FILE
-                EOF
-                ansible -i inventory.ini all -m ping
-                ansible-playbook -i inventory.ini ${PLAYBOOK_FILE} --private-key $PEM_FILE
-              '''
+    stage('Run Ansible Playbook') {
+      steps {
+        withCredentials([file(credentialsId: 'ansible-ssh-key', variable: 'PEM_FILE')]) {
+          sh """
+            set -e  # Fail if any command fails
+            chmod 600 \$PEM_FILE
+
+            echo "[all]" > inventory.ini
+            echo "target1 ansible_host=3.93.183.119 ansible_user=ubuntu ansible_ssh_private_key_file=\$PEM_FILE" >> inventory.ini
+
+            echo "🔄 Pinging EC2 instance..."
+            ansible -i inventory.ini all -m ping
+
+            echo "🚀 Running playbook to install Docker..."
+            ansible-playbook -i inventory.ini \${PLAYBOOK_FILE} --private-key \$PEM_FILE
+          """
         }
       }
     }

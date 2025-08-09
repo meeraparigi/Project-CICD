@@ -5,7 +5,6 @@ pipeline {
       AWS_ACCESS_KEY_ID = credentials('aws-access-key-id')
       AWS_SECRET_ACCESS_KEY = credentials('aws-secret-access-key')
       ANSIBLE_HOST_KEY_CHECKING = 'False'
-      INVENTORY_FILE = 'inventory.ini'
       PLAYBOOK_FILE = 'install_docker.yaml'
   }
 
@@ -21,8 +20,12 @@ pipeline {
             withCredentials([file(credentialsId: 'ansible-ssh-key', variable: 'PEM_FILE')]) {
               sh '''
                 chmod 600 $PEM_FILE
-                ansible -i ${INVENTORY_FILE} -m all ping --private-key $PEM_FILE
-                ansible-playbook -i ${INVENTORY_FILE} ${PLAYBOOK_FILE} --private-key $PEM_FILE
+                cat <<EOF > inventory.ini
+                [all]
+                target1 ansible_host=3.93.183.119 ansible_user=ubuntu ansible_ssh_private_key_file=$PEM_FILE
+                EOF
+                ansible -i inventory.ini all -m ping
+                ansible-playbook -i inventory.ini ${PLAYBOOK_FILE} --private-key $PEM_FILE
               '''
         }
       }

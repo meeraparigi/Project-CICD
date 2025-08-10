@@ -22,8 +22,18 @@ pipeline {
             set -e  # Fail if any command fails
             chmod 600 \$PEM_FILE
 
+            # Get the public IP of the EC2 instance using AWS CLI and a tag or name filter
+            INSTANCE_ID=$(aws ec2 describe-instances \
+            --filters "Name=tag:Name,Values=myserver" "Name=instance-state-name,Values=running" \
+            --query "Reservations[0].Instances[0].InstanceId" --output text)
+
+            PUBLIC_IP=$(aws ec2 describe-instances \
+            --instance-ids $INSTANCE_ID \
+            --query "Reservations[0].Instances[0].PublicIpAddress" \
+            --output text)
+
             echo "[all]" > inventory.ini
-            echo "target1 ansible_host=3.93.183.119 ansible_user=ubuntu ansible_ssh_private_key_file=\$PEM_FILE" >> inventory.ini
+            echo "target1 ansible_host=\${PUBLIC_IP} ansible_user=ubuntu ansible_ssh_private_key_file=\$PEM_FILE" >> inventory.ini
 
             echo "🔄 Pinging EC2 instance..."
             ansible -i inventory.ini all -m ping

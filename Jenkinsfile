@@ -6,6 +6,8 @@ pipeline {
       AWS_SECRET_ACCESS_KEY = credentials('aws-secret-access-key')
       ANSIBLE_HOST_KEY_CHECKING = 'False'
       PLAYBOOK_FILE = 'install_docker.yaml'
+      SECRET_NAME = 'docker-credentials'
+      REGION = 'us-east-1'
   }
 
   stages {
@@ -45,6 +47,37 @@ pipeline {
       }
     }
 
+    stage('Docker Login') {
+      steps {
+        script {
+          // Fetch secret from AWS Secrets Manager
+          def dockerCreds = sh(
+            script: "aws-secretsmanager get-secret-value --secret-id ${SECRET_NAME} --region ${REGION} --query SecretString --output text"
+            returnStdout: true
+          ).trim()
+
+          // Parse the JSON string returned by the Secrets Manager
+          def creds = readJSON text: dockerCreds
+          def username = creds.username
+          def password = cred.password
+
+          // Perform secure Docker Login using the password via stdin
+          sh """
+            echo "$password" | docker login -u "$username" --password-stdin
+          """
+        }  
+      }
+    }
+
+    stage('Build and Push Docker Image') {
+      steps {
+        sh '''
+          docker build -t $username/myapp:latest .
+          docker push $username/myapp:latest
+        '''
+      }  
+    }
+    
     stage('Terraform Init') {
       steps {
         dir('terraform') {

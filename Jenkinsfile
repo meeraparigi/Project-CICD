@@ -78,8 +78,8 @@ pipeline {
     stage('Build and Push Docker Image') {
       steps {
         sh '''
-          docker build -t "$DOCKER_USERNAME"/myapp:latest .
-          docker push "$DOCKER_USERNAME"/myapp:latest
+          sudo docker build -t "$DOCKER_USERNAME"/myapp:latest .
+          sudo docker push "$DOCKER_USERNAME"/myapp:latest
         '''
       }  
     }

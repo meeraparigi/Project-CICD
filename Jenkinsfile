@@ -72,11 +72,11 @@ pipeline {
                 echo "✅ Docker login succeeded."
           }
 
-           // Docker build and push
-          sh """
-            docker build -t ${username}/myapp:latest .
-            docker push ${username}/myapp:latest
-          """
+          // Docker build and push
+            sh """
+              docker build -t ${username}/myapp:latest .
+              docker push ${username}/myapp:latest
+            """
         }  
       }
     }

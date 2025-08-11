@@ -6,5 +6,5 @@ COPY . .
 RUN mkdir logs \
   && touch ./logs/dummy.log \
   && chmod 777 ./logs/dummy.log
-EXPOSE 8080
+EXPOSE 8000
 CMD ["python", "./dummy.py"]

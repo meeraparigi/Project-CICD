@@ -44,6 +44,7 @@
     loop:
       - ubuntu
       - jenkins
+    become: yes
 
   - name: Check if the user is in docker group
     command: id "{{ item }}"

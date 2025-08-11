@@ -49,8 +49,3 @@
   - name: Show user group info
     debug: 
       var: id_output.stdout
-
-  - name: Reboot the system (if safe)
-    reboot:
-      msg: "Reboot initiated to refresh group membership"
-      reboot_timeout: 600

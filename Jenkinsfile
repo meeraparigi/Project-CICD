@@ -59,12 +59,18 @@ pipeline {
           // Parse the JSON string returned by the Secrets Manager
           def creds = readJSON text: dockerCreds
           env.DOCKER_USERNAME = creds.username
-          env.DOCKER_PASSWORD = cred.password
+          env.DOCKER_PASSWORD = creds.password
 
           // Perform secure Docker Login using the password via stdin
-          sh """
-            echo "${DOCKER_PASSWORD}" | docker login -u "${DOCKER_USERNAME}" --password-stdin
-          """
+          def loginStatus = sh (
+            script: 'echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin',
+            returnStatus: true
+          )
+          if (loginStatus != 0) {
+                error("❌ Docker login failed.")
+            } else {
+                echo "✅ Docker login succeeded."
+          }
         }  
       }
     }
@@ -72,8 +78,8 @@ pipeline {
     stage('Build and Push Docker Image') {
       steps {
         sh '''
-          docker build -t "${DOCKER_USERNAME}"/myapp:latest .
-          docker push "${DOCKER_USERNAME}"/myapp:latest
+          docker build -t "$DOCKER_USERNAME"/myapp:latest .
+          docker push "$DOCKER_USERNAME"/myapp:latest
         '''
       }  
     }

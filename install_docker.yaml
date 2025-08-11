@@ -57,11 +57,3 @@
   - name: Show user group membership info
     debug: 
       var: id_output.results
-
-  - name: Reboot the server
-    reboot:
-      msg: "Rebooting after group change"
-      connect_timeout: 5
-      reboot_timeout: 120
-      pre_reboot_delay: 5
-      post_reboot_delay: 30

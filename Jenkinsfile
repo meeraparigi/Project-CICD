@@ -74,8 +74,8 @@ pipeline {
 
           // Docker build and push
             sh """
-              docker build -t ${username}/myapp:latest .
-              docker push ${username}/myapp:latest
+              docker build -t "$DOCKER_USERNAME"/myapp:latest .
+              docker push "$DOCKER_USERNAME"/myapp:latest
             """
         }  
       }

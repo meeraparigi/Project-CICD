@@ -47,7 +47,7 @@ pipeline {
       }
     }
 
-    stage('Docker Login') {
+    stage('Docker Login, Build and Push') {
       steps {
         script {
           // Fetch secret from AWS Secrets Manager
@@ -71,17 +71,14 @@ pipeline {
             } else {
                 echo "✅ Docker login succeeded."
           }
+
+           // Docker build and push
+          sh """
+            docker build -t ${username}/myapp:latest .
+            docker push ${username}/myapp:latest
+          """
         }  
       }
-    }
-
-    stage('Build and Push Docker Image') {
-      steps {
-        sh '''
-          sudo docker build -t "$DOCKER_USERNAME"/myapp:latest .
-          sudo docker push "$DOCKER_USERNAME"/myapp:latest
-        '''
-      }  
     }
     
     stage('Terraform Init') {
